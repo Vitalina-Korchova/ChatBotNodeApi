@@ -12,3 +12,12 @@ export interface WeatherResponse {
     wind_kph: number;
   };
 }
+
+export interface WeatherData {
+  city: string;
+  country: string;
+  temperature: number;
+  condition: string;
+  humidity: number;
+  wind_kph: number;
+}

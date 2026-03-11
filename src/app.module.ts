@@ -6,6 +6,7 @@ import { WeatherModule } from './weather/weather.module';
 import { CurrencyModule } from './currency/currency.module';
 import { NewsModule } from './news/news.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     WeatherModule,
     CurrencyModule,
     NewsModule,
+    BotModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,13 +9,9 @@ const cache = new Map<string, FormattedCurrencyResponse>();
 
 @Injectable()
 export class CurrencyService {
-  /**
-   * Повертає курс однієї валюти до іншої
-   */
   async getRate(from: string, to: string) {
     const cacheKey = `currency_${from}_${to}`;
 
-    // 🔹 Перевіряємо кеш
     const cached = cache.get(cacheKey);
     if (cached) {
       return {
@@ -24,7 +20,6 @@ export class CurrencyService {
       };
     }
 
-    // 🔹 Запит до FreeCurrencyAPI
     const url = `https://api.freecurrencyapi.com/v1/latest?apikey=${process.env.CURRENCY_API_KEY}&base_currency=${from}`;
 
     const response = await fetch(url);
@@ -38,7 +33,6 @@ export class CurrencyService {
     const rawData: unknown = await response.json();
     const data = rawData as CurrencyApiResponse;
 
-    // 🔹 Витягуємо тільки потрібну валюту
     const rate = data.data[to];
     if (rate === undefined) {
       throw new HttpException(
@@ -54,7 +48,6 @@ export class CurrencyService {
       },
     };
 
-    // 🔹 Заносимо в кеш
     cache.set(cacheKey, formatted);
 
     return {
