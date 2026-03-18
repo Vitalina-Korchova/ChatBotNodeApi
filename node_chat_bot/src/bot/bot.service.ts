@@ -1,10 +1,11 @@
-// bot.service.ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { CurrencyService } from 'src/currency/currency.service';
-import { FormattedCurrencyResponse } from 'src/currency/currency.type';
+import { Telegraf, Context } from 'telegraf';
 import { WeatherService } from 'src/weather/weather.service';
 import { WeatherData } from 'src/weather/weather.type';
-import { Telegraf, Context } from 'telegraf';
+import { CurrencyService } from 'src/currency/currency.service';
+import { FormattedCurrencyResponse } from 'src/currency/currency.type';
+import { NlpService } from 'src/nlp/nlp.service';
+import { NlpResult } from 'src/nlp/nlp.type';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -13,6 +14,7 @@ export class BotService implements OnModuleInit {
   constructor(
     private readonly weatherService: WeatherService,
     private readonly currencyService: CurrencyService,
+    private readonly nlpService: NlpService,
   ) {}
 
   onModuleInit(): void {
@@ -21,19 +23,18 @@ export class BotService implements OnModuleInit {
 
     this.bot = new Telegraf(token);
 
-    // helper для показу інструкції
     const sendHelp = (ctx: Context) =>
       ctx.reply(
         '👋 Hello! I can provide weather info and currency rates.\n\n' +
           'Use commands or type naturally:\n' +
-          '🌤 /weather <city> or "погода в Києві"\n' +
-          '💱 /currency <from> <to> or "1 USD в UAH"',
+          '🌤 /weather <city> or ask "weather in <city>"\n' +
+          '💱 /currency <from> <to> or "convert 100 USD to UAH"',
       );
 
     // /start
     this.bot.start(sendHelp);
 
-    // /weather
+    // /weather command
     this.bot.command('weather', async (ctx) => {
       const city = ctx.message?.text.split(' ')[1];
       if (!city)
@@ -41,7 +42,7 @@ export class BotService implements OnModuleInit {
       await this.handleWeather(ctx, city);
     });
 
-    // /currency
+    // /currency command
     this.bot.command('currency', async (ctx) => {
       const parts = ctx.message?.text.split(' ');
       const from = parts?.[1]?.toUpperCase();
@@ -53,36 +54,28 @@ export class BotService implements OnModuleInit {
       await this.handleCurrency(ctx, from, to);
     });
 
-    // прості повідомлення
     this.bot.on('text', async (ctx) => {
-      const text = ctx.message?.text.toLowerCase() ?? '';
-      // погода
-      if (text.includes('Kiyv') || text.includes('weather')) {
-        const cityMatch =
-          text.match(/в\s+([а-яa-z\s]+)/i) ??
-          text.match(/weather\s+in\s+([a-z\s]+)/i);
-        const city = cityMatch?.[1]?.trim();
-        if (!city) return ctx.reply('⚠️ Please provide a city. Example: "Kyiv');
-        await this.handleWeather(ctx, city);
-        return;
-      }
+      const text = ctx.message?.text ?? '';
 
-      // валюти
-      if (
-        text.includes('usd') ||
-        text.includes('uah') ||
-        text.includes('eur')
-      ) {
-        const match = text.match(/([a-z]{3}).*?([a-z]{3})/i);
-        const from = match?.[1]?.toUpperCase();
-        const to = match?.[2]?.toUpperCase();
-        if (!from || !to) return sendHelp(ctx);
-        await this.handleCurrency(ctx, from, to);
-        return;
-      }
+      //  NLP сервіс
+      const nlpResult: NlpResult = await this.nlpService.parseText(text);
 
-      // невідомий текст
-      sendHelp(ctx);
+      switch (nlpResult.intent) {
+        case 'weather':
+          if (!nlpResult.city)
+            return ctx.reply('⚠️ Please provide a city for weather info.');
+          await this.handleWeather(ctx, nlpResult.city);
+          break;
+
+        case 'currency':
+          if (!nlpResult.from || !nlpResult.to)
+            return ctx.reply('⚠️ Could not determine currency.');
+          await this.handleCurrency(ctx, nlpResult.from, nlpResult.to);
+          break;
+
+        default:
+          sendHelp(ctx);
+      }
     });
 
     void this.bot.launch().then(() => console.log('🤖 Bot started'));

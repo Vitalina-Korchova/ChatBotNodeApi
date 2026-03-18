@@ -7,6 +7,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { NewsModule } from './news/news.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { BotModule } from './bot/bot.module';
+import { NlpModule } from './nlp/nlp.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BotModule } from './bot/bot.module';
     CurrencyModule,
     NewsModule,
     BotModule,
+    NlpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
