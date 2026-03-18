@@ -8,6 +8,7 @@ import { NewsModule } from './news/news.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { BotModule } from './bot/bot.module';
 import { NlpModule } from './nlp/nlp.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NlpModule } from './nlp/nlp.module';
     NewsModule,
     BotModule,
     NlpModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
