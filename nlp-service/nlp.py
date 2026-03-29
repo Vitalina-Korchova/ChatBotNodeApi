@@ -1,5 +1,6 @@
 import spacy
 import re
+from datetime import datetime, timedelta
 
 # NLP модель
 nlp = spacy.load("en_core_web_md")
@@ -15,7 +16,7 @@ def detect_intent(text: str):
 
  
     weather_keywords = [
-        "weather", "погода", "temperature", "temp", "hot", "cold", "forecast", "тепло", "холодно"
+        "weather", "weahter", "temperature", "temp", "hot", "cold", "forecast", "тепло", "холодно"
     ]
 
     if any(word in text_lower for word in weather_keywords):
@@ -25,6 +26,12 @@ def detect_intent(text: str):
     currency_keywords = ["usd", "eur", "uah", "ron", "gbp", "pln", "jpy", "chf", "cad", "aud"]
     if any(word in text_lower for word in currency_keywords):
         return "currency"
+    
+    reminder_keywords = ["remind", "reminder", "remember", "alert", "notify"]
+    if any(word in text_lower for word in reminder_keywords):
+        return "reminder"
+
+
 
     return "unknown"
 
@@ -37,7 +44,6 @@ def extract_city(text: str):
         if ent.label_ == "GPE":
             return ent.text
 
-   
     match = re.search(r"в\s+([а-яіїєґa-z\s]+)", text.lower())
     if match:
         return match.group(1).strip()
@@ -64,6 +70,34 @@ def extract_currency(text: str):
 
     return None, None
 
+def extract_reminder(text: str):
+    text_lower = text.lower()
+
+    # tomorrow
+    if "tomorrow" in text_lower:
+        date = datetime.now() + timedelta(days=1)
+    else:
+        date = datetime.now()
+
+    # time (9:00, 14:30)
+    time_match = re.search(r"(\d{1,2}):(\d{2})", text)
+    if not time_match:
+        return None
+
+    hour = int(time_match.group(1))
+    minute = int(time_match.group(2))
+
+    reminder_datetime = date.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+    # text after "about" or "to"
+    text_match = re.search(r"(?:about|to)\s+(.+)", text_lower)
+    reminder_text = text_match.group(1) if text_match else "Reminder"
+
+    return {
+        "datetime": reminder_datetime.isoformat(),
+        "text": reminder_text
+    }
+
 #  основна функція
 def process_text(text: str):
     intent = detect_intent(text)
@@ -82,7 +116,15 @@ def process_text(text: str):
             "from": from_curr,
             "to": to_curr
         }
+    
+    if intent == "reminder":
+        reminder = extract_reminder(text)
+        return {
+            "intent": intent,
+            "reminder": reminder
+        }
 
     return {
         "intent": "unknown"
     }
+

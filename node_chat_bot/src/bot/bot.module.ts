@@ -5,6 +5,7 @@ import { WeatherService } from 'src/weather/weather.service';
 import { CurrencyService } from 'src/currency/currency.service';
 import { NlpService } from 'src/nlp/nlp.service';
 import { UserService } from 'src/user/user.service';
+import { ReminderService } from 'src/reminder/reminder.service';
 
 @Module({
   controllers: [BotController],
@@ -14,6 +15,7 @@ import { UserService } from 'src/user/user.service';
     CurrencyService,
     NlpService,
     UserService,
+    ReminderService,
   ],
 })
 export class BotModule {}

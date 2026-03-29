@@ -13,4 +13,16 @@ export interface UnknownNlpResult {
   intent: 'unknown';
 }
 
-export type NlpResult = WeatherNlpResult | CurrencyNlpResult | UnknownNlpResult;
+export interface ReminderNlpResult {
+  intent: 'reminder';
+  reminder: {
+    datetime: string;
+    text: 'string';
+  };
+}
+
+export type NlpResult =
+  | WeatherNlpResult
+  | CurrencyNlpResult
+  | UnknownNlpResult
+  | ReminderNlpResult;

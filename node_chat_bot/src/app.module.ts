@@ -9,16 +9,20 @@ import { LoggerMiddleware } from './logger/logger.middleware';
 import { BotModule } from './bot/bot.module';
 import { NlpModule } from './nlp/nlp.module';
 import { UserModule } from './user/user.module';
+import { ReminderModule } from './reminder/reminder.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     WeatherModule,
     CurrencyModule,
     NewsModule,
     BotModule,
     NlpModule,
     UserModule,
+    ReminderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

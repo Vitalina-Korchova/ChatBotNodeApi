@@ -7,6 +7,7 @@ import { FormattedCurrencyResponse } from 'src/currency/currency.type';
 import { NlpService } from 'src/nlp/nlp.service';
 import { NlpResult } from 'src/nlp/nlp.type';
 import { UserService } from 'src/user/user.service';
+import { ReminderService } from 'src/reminder/reminder.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -17,6 +18,7 @@ export class BotService implements OnModuleInit {
     private readonly currencyService: CurrencyService,
     private readonly nlpService: NlpService,
     private readonly userService: UserService,
+    private readonly reminderService: ReminderService,
   ) {}
 
   onModuleInit(): void {
@@ -120,11 +122,34 @@ export class BotService implements OnModuleInit {
           break;
         }
 
-        case 'currency':
+        case 'currency': {
           if (!nlpResult.from || !nlpResult.to)
             return ctx.reply('⚠️ Could not determine currency.');
           await this.handleCurrency(ctx, nlpResult.from, nlpResult.to);
           break;
+        }
+
+        // reminder added
+        case 'reminder': {
+          if (!nlpResult.reminder) {
+            return ctx.reply('⚠️ Could not parse reminder.');
+          }
+
+          const { datetime, text } = nlpResult.reminder;
+
+          //  get user
+          const user = await this.userService.findOrCreate(
+            telegramId,
+            ctx.from?.first_name,
+          );
+
+          // save id
+          await this.reminderService.create(user.id, text, datetime);
+
+          await ctx.reply(`⏰ Reminder set!\n📅 ${datetime}\n📌 ${text}`);
+
+          break;
+        }
 
         default:
           sendHelp(ctx);

@@ -44,6 +44,11 @@ export class UserService {
     return users.find((u) => u.telegramId === telegramId) || null;
   }
 
+  async getById(id: number): Promise<User | null> {
+    const users = await this.loadAllUsers();
+    return users.find((u) => u.id === id) || null;
+  }
+
   // Helper to read JSON
   private async loadAllUsers(): Promise<User[]> {
     try {
