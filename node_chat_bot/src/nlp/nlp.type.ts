@@ -21,8 +21,18 @@ export interface ReminderNlpResult {
   };
 }
 
+export interface TranslateNlpResult {
+  intent: 'translate';
+  translation: {
+    target_language: string;
+    language_code: string;
+    text: string;
+  };
+}
+
 export type NlpResult =
   | WeatherNlpResult
   | CurrencyNlpResult
   | UnknownNlpResult
-  | ReminderNlpResult;
+  | ReminderNlpResult
+  | TranslateNlpResult;

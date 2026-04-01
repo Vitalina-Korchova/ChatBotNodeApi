@@ -5,12 +5,20 @@ from datetime import datetime, timedelta
 # NLP модель
 nlp = spacy.load("en_core_web_md")
 
-#  список валідних валют
 VALID_CURRENCIES = {
     "USD", "EUR", "UAH", "RON", "GBP", "PLN", "JPY", "CHF", "CAD", "AUD"
 }
 
-# 🔹 intent detection
+# supported languages for translation
+SUPPORTED_LANGUAGES = {
+    "ukrainian": "uk",
+    "ukranian": "uk",
+    "ukr": "uk",
+    "french": "fr",
+    "korean": "ko"
+}
+
+# intent detection
 def detect_intent(text: str):
     text_lower = text.lower()
 
@@ -31,7 +39,9 @@ def detect_intent(text: str):
     if any(word in text_lower for word in reminder_keywords):
         return "reminder"
 
-
+    translate_keywords = ["translate", "translation", "trans"]
+    if any(word in text_lower for word in translate_keywords):
+        return "translate"
 
     return "unknown"
 
@@ -98,6 +108,36 @@ def extract_reminder(text: str):
         "text": reminder_text
     }
 
+def extract_translation_details(text: str):
+    text_lower = text.lower()
+    
+    # 1. Спробуємо знайти мову
+    target_lang = None
+    lang_code = None
+    for lang, code in SUPPORTED_LANGUAGES.items():
+        if lang in text_lower:
+            target_lang = lang
+            lang_code = code
+            break
+            
+    if not target_lang:
+        return None
+
+    
+    word_match = re.search(r"(?:word|text):\s*(.+)", text, re.IGNORECASE)
+    if word_match:
+        translate_text = word_match.group(1).strip()
+    else:
+       
+        translate_text = text.replace(target_lang, "").replace("translate", "").replace("in", "").replace("to", "").strip()
+        translate_text = re.sub(r'\s+', ' ', translate_text).strip()
+
+    return {
+        "target_language": target_lang,
+        "language_code": lang_code,
+        "text": translate_text
+    }
+
 #  основна функція
 def process_text(text: str):
     intent = detect_intent(text)
@@ -122,6 +162,13 @@ def process_text(text: str):
         return {
             "intent": intent,
             "reminder": reminder
+        }
+
+    if intent == "translate":
+        translation = extract_translation_details(text)
+        return {
+            "intent": intent,
+            "translation": translation
         }
 
     return {

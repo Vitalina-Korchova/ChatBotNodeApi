@@ -11,6 +11,7 @@ import { NlpModule } from './nlp/nlp.module';
 import { UserModule } from './user/user.module';
 import { ReminderModule } from './reminder/reminder.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TranslateModule } from './translate/translate.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     NlpModule,
     UserModule,
     ReminderModule,
+    TranslateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

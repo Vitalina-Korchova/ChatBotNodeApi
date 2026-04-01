@@ -8,6 +8,7 @@ import { NlpService } from 'src/nlp/nlp.service';
 import { NlpResult } from 'src/nlp/nlp.type';
 import { UserService } from 'src/user/user.service';
 import { ReminderService } from 'src/reminder/reminder.service';
+import { TranslateService } from 'src/translate/translate.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -19,6 +20,7 @@ export class BotService implements OnModuleInit {
     private readonly nlpService: NlpService,
     private readonly userService: UserService,
     private readonly reminderService: ReminderService,
+    private readonly translateService: TranslateService,
   ) {}
 
   onModuleInit(): void {
@@ -151,6 +153,17 @@ export class BotService implements OnModuleInit {
           break;
         }
 
+        case 'translate': {
+          if (!nlpResult.translation) {
+            return ctx.reply('⚠️ No translation details found.');
+          }
+
+          const { text, language_code, target_language } = nlpResult.translation;
+
+          await this.handleTranslate(ctx, text, language_code, target_language);
+          break;
+        }
+
         default:
           sendHelp(ctx);
       }
@@ -213,6 +226,27 @@ export class BotService implements OnModuleInit {
       await ctx.reply(
         '❌ Error fetching currency rate. Please try again later.',
       );
+    }
+  }
+
+  private async handleTranslate(
+    ctx: Context,
+    text: string,
+    targetCode: string,
+    targetName: string,
+  ): Promise<void> {
+    try {
+      const translated = await this.translateService.translate(text, targetCode);
+
+      const replyText =
+        `🌐 Translation into ${targetName}:\n` +
+        `📝 Source: ${text}\n` +
+        `✅ Result: ${translated}`;
+
+      await ctx.reply(replyText);
+    } catch (error) {
+      console.error(error);
+      await ctx.reply('❌ Error performing translation. Please check API key or try again.');
     }
   }
 }
