@@ -7,6 +7,7 @@ import { NlpService } from 'src/nlp/nlp.service';
 import { UserService } from 'src/user/user.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { TranslateService } from 'src/translate/translate.service';
+import { BotLogService } from 'src/logger/bot-log.service';
 
 @Module({
   controllers: [BotController],
@@ -18,6 +19,7 @@ import { TranslateService } from 'src/translate/translate.service';
     UserService,
     ReminderService,
     TranslateService,
+    BotLogService,
   ],
 })
-export class BotModule {}
+export class BotModule { }

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-15T14:42:58.710Z",
+  "statistics": {
+    "dailyCount": 9,
+    "weeklyCount": 9,
+    "popularCommands": [
+      {
+        "command": "weather",
+        "count": 4
+      },
+      {
+        "command": "translate",
+        "count": 2
+      },
+      {
+        "command": "currency",
+        "count": 2
+      },
+      {
+        "command": "unknown",
+        "count": 1
+      }
+    ],
+    "errorCount": 0,
+    "invalidCount": 1,
+    "totalCount": 9
+  }
+}

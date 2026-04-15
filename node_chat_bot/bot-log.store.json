@@ -1,0 +1,56 @@
+[
+  {
+    "timestamp": "2026-04-15T14:40:02.550Z",
+    "type": "translate",
+    "query": "ukranian",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:40:12.448Z",
+    "type": "weather",
+    "query": "Maroko",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:40:19.535Z",
+    "type": "weather",
+    "query": "Lviv",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:40:34.116Z",
+    "type": "currency",
+    "query": "USD-EUR",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:41:45.454Z",
+    "type": "weather",
+    "query": "Paris",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:41:57.610Z",
+    "type": "currency",
+    "query": "USD-EUR",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:42:16.062Z",
+    "type": "translate",
+    "query": "korean",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:42:38.545Z",
+    "type": "weather",
+    "query": "China",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-15T14:42:54.814Z",
+    "type": "unknown",
+    "query": "could",
+    "result": "invalid"
+  }
+]
